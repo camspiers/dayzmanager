@@ -381,13 +381,13 @@ EOF
     echo "Sevice started."
   else
     echo "Sevice was not enabled or started."
-    echo ""
   fi
 
+  echo ""
   echo "You can enable the service by running (this will enable the server to start automatically at boot):"
   echo "sudo systemctl enable ${SYSTEMD_UNIT_NAME}.service"
   echo ""
-  echo "You can disaled the service by running (this will disable the server to start automatically at boot):"
+  echo "You can disaled the service by running (this will disable the server from starting automatically at boot):"
   echo "sudo systemctl disable ${SYSTEMD_UNIT_NAME}.service"
   echo ""
   echo "You can start the service by running:"
