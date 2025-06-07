@@ -28,24 +28,39 @@ Ensure the following are available in your `PATH`:
 ## Usage
 
 ```bash
-dayzmanager.sh myconfig.json {login|setup|update|start|backup|systemd}
+Usage: dayzmanager.sh [-c config.json] <command>
+
+Options:
+
+  -c config.json   Path to config file (default: config.json)
+  -v               Enable verbose output
+  -h               Output this message
+
+Command (required):
+
+  setup            Set up the server
+  backup           Back up files
+  login            Authenticate with remote service
+  systemd          Generate systemd unit file
+  update           Update server and mods
+  start            Start the server
 ```
 
 Given a valid JSON config, use the following steps to setup your DayZ Server.
 
 ```bash
 # Run login to ensure that the specified steam user's (from your JSON config) credentials are cached
-dayzmanager.sh myconfig.json login
+dayzmanager.sh -c myconfig.json login
 ```
 
 ```bash
 # Run setup to install the DayZ Server and the specified mods, resources and missions in your JSON config
-dayzmanager.sh myconfig.json setup
+dayzmanager.sh -c myconfig.json setup
 ```
 
 ```bash
 # Run systemd to create or update a systemd unit for starting, stopping, auto-starting at boot, and auto-restarting the DayZ server
-dayzmanager.sh myconfig.json systemd
+dayzmanager.sh -c myconfig.json systemd
 ```
 
 ### Commands
