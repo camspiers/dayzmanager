@@ -30,12 +30,19 @@ EOF
   exit 1
 }
 
-# Ensure that the following commands exist
-for cmd in jq steamcmd realpath find tar rsync; do
-  if ! command -v "$cmd" >/dev/null 2>&1; then
-    echo "Required command '$cmd' not found in PATH."
+# ------------------------------------
+# Ensures that the provided cmd exists
+# ------------------------------------
+ensure_command() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "Required command '$1' not found in PATH."
     exit 1
   fi
+}
+
+# Ensure that the following commands exist
+for cmd in jq steamcmd realpath find tar rsync; do
+  ensure_command "$cmd"
 done
 
 # Obtain a full path to the current dayzmanager.sh file being executed
@@ -185,10 +192,7 @@ setup_mods() {
 setup_resources() {
   query_c '.resources[] | select(.type == "git")' | while IFS= read -r resource; do
     # Ensure git command is available
-    if ! command -v git >/dev/null 2>&1; then
-      echo "Required command '$cmd' not found in PATH."
-      exit 1
-    fi
+    ensure_command "git"
 
     name=$(query '.name' "$resource")
     url=$(query '.url' "$resource")
@@ -210,6 +214,8 @@ setup_resources() {
 }
 
 systemd_timespan_to_minutes() {
+  ensure_command "systemd-analyze"
+
   microseconds=$(systemd-analyze timespan "$1" 2>/dev/null | awk '/μs:/ {print $2}')
 
   if [[ -z "$microseconds" || ! "$microseconds" =~ ^[0-9]+$ ]]; then
@@ -294,6 +300,8 @@ setup_server_config() {
 # Optionally install a systemd service unit
 # -----------------------------------------
 setup_systemd_unit() {
+  ensure_command "systemctl"
+
   SYSTEMD_UNIT_NAME=$(query '.systemd.name // "dayz-server"')
   SYSTEMD_UNIT_DESCRIPTION=$(query '.systemd.description // "DayZ Server"')
   SYSTEMD_UNIT_NICENESS=$(query '.systemd.niceness // "-10"')
@@ -323,8 +331,8 @@ Wants=network-online.target
 After=syslog.target network.target nss-lookup.target network-online.target
 
 [Service]
-ExecStartPre=$DAYZ_MANAGER_FULL_PATH $CONFIG_FILE_PATH update
-ExecStart=$DAYZ_MANAGER_FULL_PATH $CONFIG_FILE_PATH start
+ExecStartPre=$DAYZ_MANAGER_FULL_PATH -c $CONFIG_FILE_PATH update
+ExecStart=$DAYZ_MANAGER_FULL_PATH -c $CONFIG_FILE_PATH start
 LimitNOFILE=100000
 User=$USERNAME
 Group=$GROUP
