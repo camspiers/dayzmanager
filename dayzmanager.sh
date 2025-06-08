@@ -226,13 +226,6 @@ systemd_timespan_to_minutes() {
   echo $(($microseconds / 60000000 ))
 }
 
-setup_mission_xml() {
-  SYSTEMD_UNIT_RESTART_AFTER=$(query '.systemd.restart_after // "6h"')
-  mission="$1"
-  mission_path=$(query '.path' "$mission")
-  dest="$INSTALL_DIR/mpmissions/$(basename "$INSTALL_DIR/$mission_path")"
-}
-
 # ------------------------------------
 # Setup mission files by rsyncing them
 # ------------------------------------
